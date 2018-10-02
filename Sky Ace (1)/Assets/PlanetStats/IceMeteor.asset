@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e011a1270dd0cb84494bc7e37ea1668d, type: 3}
+  m_Name: IceMeteor
+  m_EditorClassIdentifier: 
+  planetName: Ice Meteor
+  size: 3.6
+  gravityRadiusMultiplier: 1
+  orbitSpeed: 1
+  firePlanet: 0
+  icePlanet: 1
+  isStart: 1
+  isGoal: 0
+  lore: A meteor of solid ice.
