@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetName: Apple
   size: 2
-  gravityRadiusMultiplier: 2
+  gravityRadiusMultiplier: 3.07
   orbitSpeed: 1
   firePlanet: 0
   icePlanet: 0

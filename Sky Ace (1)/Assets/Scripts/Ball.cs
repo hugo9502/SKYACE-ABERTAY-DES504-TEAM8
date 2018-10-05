@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class Ball : MonoBehaviour {
 
+    public static Ball instance = null;
+
     [HideInInspector] public GameObject planet;
     [HideInInspector] public PlanetStats planetStats;
-    public GameObject startPlanet;
 
     public GameObject explosion;
     public AudioSource explosionSFX;
 
     private Transform center;
-    private Vector3 axis = Vector3.up;
 
     public AudioSource swing;
 
@@ -22,6 +22,7 @@ public class Ball : MonoBehaviour {
     // public bool teeOff = true;
     // public Slider powerSlider;
     // float teeOffPower;
+
     [HideInInspector] public bool isOrbiting = false;
     [HideInInspector] public bool inOrbit = false;
 
@@ -30,12 +31,29 @@ public class Ball : MonoBehaviour {
 
     public bool levelComplete;
 
+    public bool gameOver = false;
+
+    public Text gameOverText;
+    public GameObject ship;
+    public GameObject scoreText;
+
     private Rigidbody rb;
+
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance == !this)
+            Destroy(this.gameObject);
+    }
 
     // Use this for initialization
     void Start () {
         // Always default levelComplete to false at the start of a level:
         levelComplete = false;
+        // Default gameOverText enabled to false:
+        gameOverText.enabled = false;
         // Get a reference to the Rigidbody component:
         rb = GetComponent<Rigidbody>();
         // Get a reference to the LineRenderer component for aiming:
@@ -43,31 +61,52 @@ public class Ball : MonoBehaviour {
         // Assign a starting velocity to the Rigidbody:
         rb.velocity = new Vector3(10f, 0f, 0f);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         //if (teeOff)
         //{
         //    TeeOff();
         //}
 
         // Check if the player presses the left mouse button and is not currently at this level's goal planet. If true, call Catapult()
-        if (Input.GetMouseButtonDown(0) && !planetStats.isGoal)
+        if (Input.GetMouseButtonDown(0))
         {
-            Catapult();
-        } else if (Input.GetMouseButtonDown(0) && planetStats.isGoal) { // If they are currently at this level's goal planet, call Putt() instead
-            Putt();
+            if (planetStats.isGoal)
+            {
+                Putt();
+            }
+            else
+            {
+                Catapult();
+            }
         }
 
         // Check if the player presses the right mouse button. If true, call Aim()
         if (Input.GetMouseButton(1))
         {
             Aim();
-        } else if (Input.GetMouseButtonUp(1)) // When the player releases the right mouse button, disable the LineRenderer component:
+        }
+        else if (Input.GetMouseButtonUp(1)) // When the player releases the right mouse button, disable the LineRenderer component:
         {
             lineRenderer.enabled = false;
         }
-    }
+
+        if (transform.position == planet.transform.position)
+        {
+            Instantiate(explosion, planet.transform.position, Quaternion.identity);
+            Destroy(planet.gameObject);
+            Destroy(this.gameObject);
+        }
+
+        if (gameOver)
+        {
+            gameOverText.enabled = true;
+            ship.SetActive(false);
+            scoreText.SetActive(false);
+        }
+}
 
     private void FixedUpdate()
     {
@@ -85,7 +124,7 @@ public class Ball : MonoBehaviour {
         // Set the orbit center to be the transform of the current planet:
         center = planet.transform;
         // Call CheckOrbit()
-        CheckOrbit();
+        // CheckOrbit();
         // Set the force variable according to the speed of the current planet:
         force = force * planetStats.orbitSpeed;
 
@@ -107,16 +146,16 @@ public class Ball : MonoBehaviour {
         //change the velocity of the ball has the vertical direction with the position vector
         //also a condition of circle orbit
 
-        //use the angle to evaluate if the ball is in the right position and start orbiting
+        //use the angle of velocity and position to evaluate if the ball is in the right position and start orbiting
         if (angle <= 100 && angle >= 80 && rb.velocity.magnitude != velocity1)
         {
             rb.velocity = orbitvelocity.normalized * velocity1;
             inOrbit = true;
         }
-
+        //add a force to keep the ball in the circle orbit
         rb.AddForce(r0.normalized * force * rb.mass / (r0.magnitude * r0.magnitude));
 
-        Debug.Log(angle);
+        // Debug.Log(angle);
     }
 
     void Catapult()
@@ -128,13 +167,13 @@ public class Ball : MonoBehaviour {
         rb.AddForce(rb.velocity.normalized * catapultForce);
     }
 
-    void CheckOrbit()
-    {
-        Vector3 v1 = rb.velocity;
-        Vector3 v2 = planet.transform.position - transform.position;
+    //void CheckOrbit()
+    //{
+    //    Vector3 v1 = rb.velocity;
+    //    Vector3 v2 = planet.transform.position - transform.position;
 
-        Vector3 v3 = Vector3.Cross(v1, v2);
-    }
+    //    Vector3 v3 = Vector3.Cross(v1, v2);
+    //}
 
     //void TeeOff()
     //{
@@ -149,7 +188,20 @@ public class Ball : MonoBehaviour {
 
     void Putt()
     {
+        isOrbiting = false;
         levelComplete = true;
+
+        rb.velocity = Vector3.zero;
+
+        GetComponent<SphereCollider>().enabled = false;
+        planet.GetComponent<SphereCollider>().enabled = false;
+        planet.GetComponent<Planet>().enabled = false;
+
+        transform.position = Vector3.MoveTowards(transform.position, planet.transform.position, 3f);
+
+        //Instantiate(explosion, planet.transform.position, Quaternion.identity);
+        //Destroy(planet.gameObject);
+        //Destroy(this.gameObject);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -158,14 +210,24 @@ public class Ball : MonoBehaviour {
         {
             Instantiate(explosion, transform.position, Quaternion.identity);
             explosionSFX.Play();
-            Destroy(this.gameObject);
+            GetComponent<MeshRenderer>().enabled = false;
+            GetComponent<TrailRenderer>().enabled = false;
+            gameOver = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Background")
+        {
+            gameOver = true;
         }
     }
 
     void Aim()
     {
         lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, transform.position + rb.velocity * 3f);
+        lineRenderer.SetPosition(1, transform.position + rb.velocity * 10f);
 
         lineRenderer.enabled = true;
     }

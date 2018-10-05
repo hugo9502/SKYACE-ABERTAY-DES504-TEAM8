@@ -7,7 +7,6 @@ public class CameraFollow : MonoBehaviour {
     public Vector3 offset;
     public float smoothTime;
 
-    public Ball ball;
     Transform planet;
 
     private Camera cam;
@@ -44,7 +43,7 @@ public class CameraFollow : MonoBehaviour {
 
     void Follow()
     {
-        planet = ball.planet.transform;
+        planet = Ball.instance.planet.transform;
         Vector3 velocity = Vector3.zero;
         Vector3 targetPosition = planet.position + offset;
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);

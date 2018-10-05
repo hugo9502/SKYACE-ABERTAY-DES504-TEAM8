@@ -11,8 +11,7 @@ public class PlanetStats : ScriptableObject {
     public float gravityRadiusMultiplier;
     [Range(0.25f, 1.5f)]
     public float orbitSpeed;
-    public bool firePlanet;
-    public bool icePlanet;
+    public float scoreMultiplier;
     public bool isStart;
     public bool isGoal;
     public string lore;

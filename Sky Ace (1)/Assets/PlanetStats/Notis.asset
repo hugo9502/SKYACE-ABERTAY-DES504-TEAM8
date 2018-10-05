@@ -15,8 +15,7 @@ MonoBehaviour:
   size: 2.41
   gravityRadiusMultiplier: 2.89
   orbitSpeed: 1
-  firePlanet: 0
-  icePlanet: 0
+  scoreMultiplier: 5
   isStart: 0
   isGoal: 0
   lore: Spikey.

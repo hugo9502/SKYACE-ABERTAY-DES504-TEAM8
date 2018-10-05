@@ -12,7 +12,7 @@ public class PlanetText : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        planetName = GameObject.FindGameObjectWithTag("Player").GetComponent<Ball>().planetStats.name;
+        planetName = Ball.instance.planetStats.name;
         planetText.text = planetName;
 
         if (camFollow.currentZoom > 10f)

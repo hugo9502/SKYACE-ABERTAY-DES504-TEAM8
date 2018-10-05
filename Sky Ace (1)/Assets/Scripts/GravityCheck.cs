@@ -10,9 +10,8 @@ public class GravityCheck : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
-            Ball ball = other.gameObject.GetComponent<Ball>();
-            ball.planet = planet;
-            ball.ReCentre();
+            Ball.instance.planet = planet;
+            Ball.instance.ReCentre();
             //if (!ball.teeOff)
             //{
             //    ball.ReCentre();
