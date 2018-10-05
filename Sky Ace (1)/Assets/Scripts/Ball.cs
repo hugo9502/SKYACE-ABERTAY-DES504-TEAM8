@@ -135,7 +135,7 @@ public class Ball : MonoBehaviour {
     void Orbit()
     {
         Vector3 r0 = (center.position - transform.position);
-
+        
         float velocity1 = Mathf.Sqrt(force / r0.magnitude);
         //float velocity2 = Mathf.Sqrt(2.0f) * velocity1;
         //get the basic status of the ball and calculate the first cosmic velocity(which make the ball have the circle orbit around a planet)
@@ -147,13 +147,19 @@ public class Ball : MonoBehaviour {
         //also a condition of circle orbit
 
         //use the angle of velocity and position to evaluate if the ball is in the right position and start orbiting
-        if (angle <= 100 && angle >= 80 && rb.velocity.magnitude != velocity1)
+        if (angle <= 95 && angle >= 80 && rb.velocity.magnitude != velocity1)
         {
             rb.velocity = orbitvelocity.normalized * velocity1;
+
             inOrbit = true;
+            rb.AddForce(r0.normalized * force * rb.mass / (r0.magnitude * r0.magnitude));
+
+            if (planetStats.isGoal)
+            {
+                rb.AddForce(r0.normalized * force * rb.mass*(1f+Time.deltaTime) / (r0.magnitude * r0.magnitude));
+            }
         }
         //add a force to keep the ball in the circle orbit
-        rb.AddForce(r0.normalized * force * rb.mass / (r0.magnitude * r0.magnitude));
 
         // Debug.Log(angle);
     }
@@ -164,7 +170,7 @@ public class Ball : MonoBehaviour {
         inOrbit = false;
         swing.Play();
 
-        rb.AddForce(rb.velocity.normalized * catapultForce);
+        rb.AddForce(rb.velocity.normalized * catapultForce, ForceMode.Impulse);
     }
 
     //void CheckOrbit()

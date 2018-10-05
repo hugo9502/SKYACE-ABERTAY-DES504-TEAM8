@@ -8215,7 +8215,7 @@ MonoBehaviour:
   isOrbiting: 0
   inOrbit: 0
   force: 200
-  catapultForce: 500
+  catapultForce: 7.5
   levelComplete: 0
   gameOver: 0
   gameOverText: {fileID: 524062387}
